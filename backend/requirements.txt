@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+pydantic-settings
+langchain
+langchain-groq
+langchain-community
+langchain-pinecone
+langchain-text-splitters
+crewai
+pypdf
+python-multipart
+python-dotenv
+requests
+beautifulsoup4

@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv
+venv/
+ENV/
+env/
+.env
+
+# Docker/System
+.DS_Store
+*.log
+temp_*
+postgres_data/
+
+# Secrets
+.env
+.secrets
