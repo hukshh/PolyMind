@@ -22,7 +22,7 @@ services:
     volumes:
       - ./backend:/app
     environment:
-      DATABASE_URL: postgresql://user:password@db:5432/polymind
+      DATABASE_URL: ${DATABASE_URL}
       GROQ_API_KEY: ${GROQ_API_KEY}
       PINECONE_API_KEY: ${PINECONE_API_KEY}
       PINECONE_INDEX_NAME: ${PINECONE_INDEX_NAME}
