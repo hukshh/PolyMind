@@ -164,42 +164,40 @@ if workspace == "DATA INGESTION":
     col1, col2 = st.columns(2, gap="large")
     
     with col1:
-        st.markdown('<div class="ingest-card">', unsafe_allow_html=True)
-        st.markdown("### LOCAL ARCHIVE (PDF)")
-        st.markdown("<p style='color: #475569; font-size: 0.8rem; margin-bottom: 1.5rem;'>Upload localized document archives for semantic indexing.</p>", unsafe_allow_html=True)
-        
-        uploaded_file = st.file_uploader("Archive Upload", type="pdf", label_visibility="collapsed")
-        
-        if st.button("EXECUTE INDEXING"):
-            if uploaded_file:
-                with st.spinner("Processing..."):
-                    files = {"file": (uploaded_file.name, uploaded_file.getvalue(), "application/pdf")}
-                    try:
-                        res = requests.post(f"{BACKEND_URL}/ingest/pdf", files=files)
-                        if res.status_code == 200: st.success("SUCCESS: INDEX COMPLETE")
-                    except: st.error("NETWORK ERROR")
-        
-        st.markdown("<p style='text-align: center; color: #475569; font-size: 0.65rem; margin-top: 1rem;'>Analyze and index document for vector search</p>", unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        with st.container(border=True):
+            st.markdown("### LOCAL ARCHIVE (PDF)")
+            st.markdown("<p style='color: #475569; font-size: 0.8rem; margin-bottom: 1.5rem;'>Upload localized document archives for semantic indexing.</p>", unsafe_allow_html=True)
+            
+            uploaded_file = st.file_uploader("Archive Upload", type="pdf", label_visibility="collapsed")
+            
+            if st.button("EXECUTE INDEXING"):
+                if uploaded_file:
+                    with st.spinner("Processing..."):
+                        files = {"file": (uploaded_file.name, uploaded_file.getvalue(), "application/pdf")}
+                        try:
+                            res = requests.post(f"{BACKEND_URL}/ingest/pdf", files=files)
+                            if res.status_code == 200: st.success("SUCCESS: INDEX COMPLETE")
+                        except: st.error("NETWORK ERROR")
+            
+            st.markdown("<p style='text-align: center; color: #475569; font-size: 0.65rem; margin-top: 1rem;'>Analyze and index document for vector search</p>", unsafe_allow_html=True)
 
     with col2:
-        st.markdown('<div class="ingest-card">', unsafe_allow_html=True)
-        st.markdown("### REMOTE NODE (URL)")
-        st.markdown("<p style='color: #475569; font-size: 0.8rem; margin-bottom: 1.5rem;'>Connect and synchronize external web resources.</p>", unsafe_allow_html=True)
-        
-        st.write("Enter Protocol URL (HTTPS)")
-        url = st.text_input("URL Input", placeholder="https://external-resource.com", label_visibility="collapsed")
-        
-        if st.button("SYNCHRONIZE"):
-            if url:
-                with st.spinner("Synchronizing..."):
-                    try:
-                        res = requests.post(f"{BACKEND_URL}/ingest/url", json={"url": url})
-                        if res.status_code == 200: st.success("SUCCESS: SYNC COMPLETE")
-                    except: st.error("NETWORK ERROR")
-        
-        st.markdown("<p style='text-align: center; color: #475569; font-size: 0.65rem; margin-top: 1rem;'>Fetch and map content from remote protocol</p>", unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        with st.container(border=True):
+            st.markdown("### REMOTE NODE (URL)")
+            st.markdown("<p style='color: #475569; font-size: 0.8rem; margin-bottom: 1.5rem;'>Connect and synchronize external web resources.</p>", unsafe_allow_html=True)
+            
+            st.write("Enter Protocol URL (HTTPS)")
+            url = st.text_input("URL Input", placeholder="https://external-resource.com", label_visibility="collapsed")
+            
+            if st.button("SYNCHRONIZE"):
+                if url:
+                    with st.spinner("Synchronizing..."):
+                        try:
+                            res = requests.post(f"{BACKEND_URL}/ingest/url", json={"url": url})
+                            if res.status_code == 200: st.success("SUCCESS: SYNC COMPLETE")
+                        except: st.error("NETWORK ERROR")
+            
+            st.markdown("<p style='text-align: center; color: #475569; font-size: 0.65rem; margin-top: 1rem;'>Fetch and map content from remote protocol</p>", unsafe_allow_html=True)
 
     # --- DOCUMENT MANAGEMENT SECTION ---
     st.write("---")
@@ -222,21 +220,22 @@ if workspace == "DATA INGESTION":
                 st.info("No active documents in knowledge base.")
             else:
                 for doc in active_docs:
-                    dcol1, dcol2, dcol3 = st.columns([3, 1, 1])
-                    with dcol1:
-                        st.markdown(f"<div style='background: rgba(255,255,255,0.02); padding: 10px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.05);'>{doc['name']}</div>", unsafe_allow_html=True)
-                    with dcol2:
-                        st.markdown(f"<div style='padding: 10px; color: #64748B;'>{doc['source_type'].upper()}</div>", unsafe_allow_html=True)
-                    with dcol3:
-                        if st.button("DELETE", key=f"del_{doc['id']}"):
-                            with st.spinner("Deleting..."):
-                                del_res = requests.delete(f"{BACKEND_URL}/documents/{doc['id']}")
-                                if del_res.status_code == 200:
-                                    st.success(f"Deleted")
-                                    time.sleep(1)
-                                    st.rerun()
-                                else:
-                                    st.error("Error")
+                    with st.container(border=True):
+                        dcol1, dcol2, dcol3 = st.columns([3, 1, 1])
+                        with dcol1:
+                            st.markdown(f"**{doc['name']}**")
+                        with dcol2:
+                            st.markdown(f"`{doc['source_type'].upper()}`")
+                        with dcol3:
+                            if st.button("DELETE", key=f"del_{doc['id']}", use_container_width=True):
+                                with st.spinner("Deleting..."):
+                                    del_res = requests.delete(f"{BACKEND_URL}/documents/{doc['id']}")
+                                    if del_res.status_code == 200:
+                                        st.success(f"Deleted")
+                                        time.sleep(1)
+                                        st.rerun()
+                                    else:
+                                        st.error("Error")
     except:
         st.error("Could not fetch document list.")
 
