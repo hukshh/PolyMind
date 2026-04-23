@@ -31,7 +31,11 @@ class PolyMindCrew:
             1. NEVER repeat the same fact or citation twice.
             2. If multiple sources say the same thing, group them together (e.g., 'X and Y are mentioned on [Page 13, Page 15]').
             3. If asked for a summary, provide a thematic overview, not a list of fragments.
-            4. If asked for MCQs, ensure each question covers a DIFFERENT concept.
+            4. If asked for MCQs, ensure each question covers a DIFFERENT concept. Format them elegantly:
+               - Use bold for the Question.
+               - Use bullet points for the options (A, B, C, D).
+               - Use a blockquote or bold text for the Answer.
+               - Separate each MCQ with a horizontal rule (---).
             5. Always use [Page X] for facts.
             6. Tone: Professional, clinical, and direct.""",
             llm=self.llm,
