@@ -2,9 +2,9 @@ import os
 from crewai import Agent, Task, Crew, Process
 
 class PolyMindCrew:
-    def __init__(self, context_str: str = ""):
+    def __init__(self, context: str = ""):
         self.llm = "groq/llama-3.3-70b-versatile"
-        self.context = context_str
+        self.context = context
 
     def run(self, query: str):
         # 1. Researcher: Precision Retrieval
