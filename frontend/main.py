@@ -201,6 +201,45 @@ if workspace == "DATA INGESTION":
         st.markdown("<p style='text-align: center; color: #475569; font-size: 0.65rem; margin-top: 1rem;'>Fetch and map content from remote protocol</p>", unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
+    # --- DOCUMENT MANAGEMENT SECTION ---
+    st.write("---")
+    dhead1, dhead2 = st.columns([3, 1])
+    with dhead1:
+        st.markdown("<h3 style='color: white; margin-bottom: 1rem;'>Active Knowledge Base</h3>", unsafe_allow_html=True)
+    with dhead2:
+        if st.button("WIPE ALL", help="Clear entire knowledge base", type="primary"):
+            with st.spinner("Nuking index..."):
+                if requests.delete(f"{BACKEND_URL}/documents").status_code == 200:
+                    st.success("Wiped!")
+                    time.sleep(1)
+                    st.rerun()
+    
+    try:
+        docs_res = requests.get(f"{BACKEND_URL}/documents")
+        if docs_res.status_code == 200:
+            active_docs = docs_res.json()
+            if not active_docs:
+                st.info("No active documents in knowledge base.")
+            else:
+                for doc in active_docs:
+                    dcol1, dcol2, dcol3 = st.columns([3, 1, 1])
+                    with dcol1:
+                        st.markdown(f"<div style='background: rgba(255,255,255,0.02); padding: 10px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.05);'>{doc['name']}</div>", unsafe_allow_html=True)
+                    with dcol2:
+                        st.markdown(f"<div style='padding: 10px; color: #64748B;'>{doc['source_type'].upper()}</div>", unsafe_allow_html=True)
+                    with dcol3:
+                        if st.button("DELETE", key=f"del_{doc['id']}"):
+                            with st.spinner("Deleting..."):
+                                del_res = requests.delete(f"{BACKEND_URL}/documents/{doc['id']}")
+                                if del_res.status_code == 200:
+                                    st.success(f"Deleted")
+                                    time.sleep(1)
+                                    st.rerun()
+                                else:
+                                    st.error("Error")
+    except:
+        st.error("Could not fetch document list.")
+
     # Security Footer
     st.markdown("""
         <div class="footer-card">

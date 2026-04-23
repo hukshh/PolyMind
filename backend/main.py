@@ -7,7 +7,7 @@ from pydantic import BaseModel
 import shutil
 
 from database import init_db, get_db
-from models import QueryHistory
+from models import QueryHistory, Document
 from rag import RAGPipeline
 from agents import PolyMindCrew
 
@@ -33,7 +33,7 @@ class QueryRequest(BaseModel):
     query: str
 
 @app.post("/ingest/pdf")
-async def ingest_pdf(file: UploadFile = File(...)):
+async def ingest_pdf(file: UploadFile = File(...), db: Session = Depends(get_db)):
     try:
         temp_path = f"temp_{file.filename}"
         with open(temp_path, "wb") as buffer:
@@ -41,14 +41,26 @@ async def ingest_pdf(file: UploadFile = File(...)):
         
         rag.ingest_pdf(temp_path)
         os.remove(temp_path)
+
+        # Save to DB
+        doc = Document(name=file.filename, source_type="pdf")
+        db.add(doc)
+        db.commit()
+
         return {"status": "success", "message": f"Ingested {file.filename}"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/ingest/url")
-async def ingest_url(data: URLIngest):
+async def ingest_url(data: URLIngest, db: Session = Depends(get_db)):
     try:
         rag.ingest_url(data.url)
+
+        # Save to DB
+        doc = Document(name=data.url, source_type="url")
+        db.add(doc)
+        db.commit()
+
         return {"status": "success", "message": f"Ingested {data.url}"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -109,3 +121,36 @@ async def get_metrics(db: Session = Depends(get_db)):
         "avg_response_time": avg_time,
         "docs_ingested": "See Pinecone Index" # Placeholder
     }
+@app.get("/documents")
+async def list_documents(db: Session = Depends(get_db)):
+    return db.query(Document).order_by(Document.timestamp.desc()).all()
+
+@app.delete("/documents/{doc_id}")
+async def delete_document(doc_id: int, db: Session = Depends(get_db)):
+    doc = db.query(Document).filter(Document.id == doc_id).first()
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    # 1. Delete from Pinecone
+    success = rag.delete_source(doc.name)
+    
+    # 2. Delete from Postgres
+    if success:
+        db.delete(doc)
+        db.commit()
+        return {"status": "success", "message": f"Deleted {doc.name}"}
+    else:
+        raise HTTPException(status_code=500, detail="Failed to delete from vector store")
+
+@app.delete("/documents")
+async def clear_all_documents(db: Session = Depends(get_db)):
+    # 1. Clear Pinecone
+    success = rag.clear_all()
+    
+    # 2. Clear Postgres
+    if success:
+        db.query(Document).delete()
+        db.commit()
+        return {"status": "success", "message": "All documents cleared"}
+    else:
+        raise HTTPException(status_code=500, detail="Failed to clear vector store")

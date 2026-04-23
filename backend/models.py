@@ -13,3 +13,11 @@ class QueryHistory(Base):
     response_time = Column(Float)  # in seconds
     timestamp = Column(DateTime, default=datetime.datetime.utcnow)
     source_type = Column(String)  # 'pdf' or 'url'
+
+class Document(Base):
+    __tablename__ = "documents"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    source_type = Column(String)  # 'pdf' or 'url'
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow)

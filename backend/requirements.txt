@@ -16,3 +16,4 @@ requests
 beautifulsoup4
 langchain-openai
 litellm
+pinecone-client

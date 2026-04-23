@@ -3,6 +3,7 @@ from langchain_community.document_loaders import PyPDFLoader, WebBaseLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_pinecone import PineconeEmbeddings, PineconeVectorStore
 from typing import List
+from pinecone import Pinecone
 
 class RAGPipeline:
     def __init__(self):
@@ -12,6 +13,8 @@ class RAGPipeline:
         )
         self.index_name = os.getenv("PINECONE_INDEX_NAME")
         self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+        self.pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
+        self.index = self.pc.Index(self.index_name)
 
     def ingest_pdf(self, file_path: str):
         print(f"DEBUG: Starting PDF ingestion: {file_path}")
@@ -24,6 +27,7 @@ class RAGPipeline:
         # Add source info to metadata
         for chunk in chunks:
             chunk.metadata["source"] = f"Page {chunk.metadata.get('page', 'unknown')}"
+            chunk.metadata["source_name"] = os.path.basename(file_path)
             
         print(f"DEBUG: Starting Pinecone upsert for {len(chunks)} chunks...")
         try:
@@ -48,6 +52,7 @@ class RAGPipeline:
         
         for chunk in chunks:
             chunk.metadata["source"] = url
+            chunk.metadata["source_name"] = url
             
         print(f"DEBUG: Starting Pinecone upsert for {len(chunks)} chunks...")
         try:
@@ -77,3 +82,19 @@ class RAGPipeline:
         except Exception as e:
             print(f"Search error: {e}")
             return []
+
+    def delete_source(self, source_name: str):
+        try:
+            self.index.delete(filter={"source_name": source_name})
+            return True
+        except Exception as e:
+            print(f"Delete error: {e}")
+            return False
+
+    def clear_all(self):
+        try:
+            self.index.delete(delete_all=True)
+            return True
+        except Exception as e:
+            print(f"Clear All error: {e}")
+            return False
