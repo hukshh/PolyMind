@@ -26,6 +26,10 @@ rag = RAGPipeline()
 def startup():
     init_db()
 
+@app.get("/health")
+def health_check():
+    return {"status": "healthy", "timestamp": time.time()}
+
 class URLIngest(BaseModel):
     url: str
 

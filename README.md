@@ -47,9 +47,22 @@ docker-compose up --build
 - **API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
 
 ## 🌐 Deployment
-This project is pre-configured for:
-- **Backend/DB**: Render
-- **Frontend**: Streamlit Cloud
+
+### 1. Backend (Render)
+This project uses a `render.yaml` Blueprint to set up the API and Database.
+1. Push to GitHub.
+2. Go to [Render Blueprints](https://dashboard.render.com/blueprints).
+3. Connect your repo and deploy.
+4. Set `GROQ_API_KEY`, `PINECONE_API_KEY`, and `PINECONE_INDEX_NAME` in the **polymind-backend** environment settings.
+
+### 2. Frontend (Streamlit Cloud)
+1. Go to [Streamlit Cloud](https://share.streamlit.io/).
+2. Deploy from your GitHub repo.
+3. **Main file path**: `frontend/main.py`.
+4. In **Advanced Settings -> Secrets**, add:
+   ```toml
+   BACKEND_URL = "https://your-backend-url.onrender.com"
+   ```
 
 ---
 Created with ❤️ by PolyMind Crew.
