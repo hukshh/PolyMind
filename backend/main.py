@@ -32,8 +32,15 @@ def get_rag():
 
 @app.on_event("startup")
 def startup():
-    init_db()
-    print("DEBUG: Database initialized. Server is ready.")
+    print("DEBUG: Server booting up...")
+    try:
+        init_db()
+        print("DEBUG: Database initialized successfully.")
+    except Exception as e:
+        print(f"CRITICAL: Database initialization failed: {e}")
+        # We don't crash the server here so Render can still see it as 'live'
+        # while we troubleshoot.
+    print("DEBUG: Server is ready to receive requests.")
 
 @app.get("/health")
 def health_check():
