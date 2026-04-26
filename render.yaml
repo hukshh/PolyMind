@@ -1,6 +1,7 @@
 databases:
   - name: polymind-db
     plan: free
+    region: ohio
 
 services:
   # 2. Backend (FastAPI via Docker)
