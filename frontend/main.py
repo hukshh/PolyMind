@@ -176,8 +176,12 @@ if workspace == "DATA INGESTION":
                         files = {"file": (uploaded_file.name, uploaded_file.getvalue(), "application/pdf")}
                         try:
                             res = requests.post(f"{BACKEND_URL}/ingest/pdf", files=files)
-                            if res.status_code == 200: st.success("SUCCESS: INDEX COMPLETE")
-                        except: st.error("NETWORK ERROR")
+                            if res.status_code == 200: 
+                                st.success("SUCCESS: INDEX COMPLETE")
+                            else:
+                                st.error(f"ENGINE ERROR: {res.status_code} - {res.text}")
+                        except Exception as e: 
+                            st.error(f"NETWORK ERROR: {str(e)}")
             
             st.markdown("<p style='text-align: center; color: #475569; font-size: 0.65rem; margin-top: 1rem;'>Analyze and index document for vector search</p>", unsafe_allow_html=True)
 
@@ -194,8 +198,12 @@ if workspace == "DATA INGESTION":
                     with st.spinner("Synchronizing..."):
                         try:
                             res = requests.post(f"{BACKEND_URL}/ingest/url", json={"url": url})
-                            if res.status_code == 200: st.success("SUCCESS: SYNC COMPLETE")
-                        except: st.error("NETWORK ERROR")
+                            if res.status_code == 200: 
+                                st.success("SUCCESS: SYNC COMPLETE")
+                            else:
+                                st.error(f"ENGINE ERROR: {res.status_code} - {res.text}")
+                        except Exception as e: 
+                            st.error(f"NETWORK ERROR: {str(e)}")
             
             st.markdown("<p style='text-align: center; color: #475569; font-size: 0.65rem; margin-top: 1rem;'>Fetch and map content from remote protocol</p>", unsafe_allow_html=True)
 
