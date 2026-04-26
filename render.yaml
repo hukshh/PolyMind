@@ -1,11 +1,10 @@
-services:
-  # 1. PostgreSQL Database
-  - type: database
-    name: polymind-db
+databases:
+  - name: polymind-db
     databaseName: polymind
     user: polymind_user
     plan: free
 
+services:
   # 2. Backend (FastAPI)
   - type: web
     name: polymind-backend
