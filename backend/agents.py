@@ -56,6 +56,7 @@ class PolyMindCrew:
             context=[r_task]
         )
 
+        print(f"DEBUG: Initializing Crew for query: {query}")
         crew = Crew(
             agents=[researcher, fulfiller],
             tasks=[r_task, f_task],
@@ -63,5 +64,12 @@ class PolyMindCrew:
             verbose=True
         )
 
-        return str(crew.kickoff())
+        try:
+            print("DEBUG: Kickoff starting...")
+            result = crew.kickoff()
+            print("DEBUG: Kickoff finished successfully.")
+            return str(result)
+        except Exception as e:
+            print(f"DEBUG: CrewAI Error: {str(e)}")
+            return f"Agent Synthesis encountered an error: {str(e)}"
 

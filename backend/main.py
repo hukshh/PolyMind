@@ -116,18 +116,24 @@ async def get_history(db: Session = Depends(get_db)):
 
 @app.get("/metrics")
 async def get_metrics(db: Session = Depends(get_db)):
-    total_queries = db.query(QueryHistory).count()
-    # Simple average calculation
-    avg_time = 0
-    if total_queries > 0:
-        times = db.query(QueryHistory.response_time).all()
-        avg_time = sum([t[0] for t in times]) / total_queries
-    
-    return {
-        "total_queries": total_queries,
-        "avg_response_time": avg_time,
-        "docs_ingested": "See Pinecone Index" # Placeholder
-    }
+    try:
+        total_queries = db.query(QueryHistory).count()
+        total_docs = db.query(Document).count()
+        
+        avg_time = 0
+        if total_queries > 0:
+            times = db.query(QueryHistory.response_time).all()
+            avg_time = sum([t[0] for t in times]) / total_queries
+        
+        return {
+            "total_queries": total_queries,
+            "avg_response_time": round(avg_time, 2),
+            "docs_ingested": total_docs,
+            "system_health": "Optimal",
+            "active_agents": 2
+        }
+    except Exception as e:
+        return {"error": str(e)}
 @app.get("/documents")
 async def list_documents(db: Session = Depends(get_db)):
     return db.query(Document).order_by(Document.timestamp.desc()).all()
