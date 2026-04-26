@@ -1,7 +1,5 @@
 databases:
   - name: polymind-db
-    databaseName: polymind
-    user: polymind_user
     plan: free
 
 services:
