@@ -23,11 +23,17 @@ app.add_middleware(
 
 rag = None
 
+def get_rag():
+    global rag
+    if rag is None:
+        print("DEBUG: Initializing RAG Pipeline (Lazy Load)...")
+        rag = RAGPipeline()
+    return rag
+
 @app.on_event("startup")
 def startup():
-    global rag
     init_db()
-    rag = RAGPipeline()
+    print("DEBUG: Database initialized. Server is ready.")
 
 @app.get("/health")
 def health_check():
@@ -46,7 +52,8 @@ async def ingest_pdf(file: UploadFile = File(...), db: Session = Depends(get_db)
         with open(temp_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
         
-        rag.ingest_pdf(temp_path)
+        current_rag = get_rag()
+        current_rag.ingest_pdf(temp_path)
         os.remove(temp_path)
 
         # Save to DB
@@ -61,7 +68,8 @@ async def ingest_pdf(file: UploadFile = File(...), db: Session = Depends(get_db)
 @app.post("/ingest/url")
 async def ingest_url(data: URLIngest, db: Session = Depends(get_db)):
     try:
-        rag.ingest_url(data.url)
+        current_rag = get_rag()
+        current_rag.ingest_url(data.url)
 
         # Save to DB
         doc = Document(name=data.url, source_type="url")
@@ -76,8 +84,9 @@ async def ingest_url(data: URLIngest, db: Session = Depends(get_db)):
 async def query_handler(data: QueryRequest, db: Session = Depends(get_db)):
     start_time = time.time()
     try:
+        current_rag = get_rag()
         # 1. Retrieve chunks
-        relevant_docs = rag.search(data.query)
+        relevant_docs = current_rag.search(data.query)
         if not relevant_docs:
             context_text = "No relevant information was found in the provided document for this query."
         else:
@@ -145,7 +154,8 @@ async def delete_document(doc_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Document not found")
     
     # 1. Delete from Pinecone
-    success = rag.delete_source(doc.name)
+    current_rag = get_rag()
+    success = current_rag.delete_source(doc.name)
     
     # 2. Delete from Postgres
     if success:
@@ -158,7 +168,8 @@ async def delete_document(doc_id: int, db: Session = Depends(get_db)):
 @app.delete("/documents")
 async def clear_all_documents(db: Session = Depends(get_db)):
     # 1. Clear Pinecone
-    success = rag.clear_all()
+    current_rag = get_rag()
+    success = current_rag.clear_all()
     
     # 2. Clear Postgres
     if success:
