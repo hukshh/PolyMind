@@ -20,11 +20,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-rag = RAGPipeline()
+rag = None
 
 @app.on_event("startup")
 def startup():
+    global rag
     init_db()
+    rag = RAGPipeline()
 
 @app.get("/health")
 def health_check():
