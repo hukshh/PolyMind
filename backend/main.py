@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 import shutil
 
-from database import init_db, get_db
+from database import get_db
 from models import QueryHistory, Document
 from rag import RAGPipeline
 from agents import PolyMindCrew
@@ -32,19 +32,15 @@ def get_rag():
 
 @app.on_event("startup")
 def startup():
-    print("DEBUG: Server booting up...")
-    try:
-        init_db()
-        print("DEBUG: Database initialized successfully.")
-    except Exception as e:
-        print(f"CRITICAL: Database initialization failed: {e}")
-        # We don't crash the server here so Render can still see it as 'live'
-        # while we troubleshoot.
-    print("DEBUG: Server is ready to receive requests.")
+    print("DEBUG: Server starting instantly. All heavy connections deferred.")
+
+@app.get("/")
+def root():
+    return {"status": "PolyMind Engine Online", "port": 10000}
 
 @app.get("/health")
 def health_check():
-    return {"status": "healthy", "timestamp": time.time()}
+    return {"status": "healthy"}
 
 class URLIngest(BaseModel):
     url: str
