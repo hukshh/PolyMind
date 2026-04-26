@@ -3,12 +3,12 @@ databases:
     plan: free
 
 services:
-  # 2. Backend (FastAPI)
+  # 2. Backend (FastAPI via Docker)
   - type: web
     name: polymind-backend
-    env: python
-    buildCommand: "cd backend && pip install -r requirements.txt"
-    startCommand: "cd backend && gunicorn -w 2 -k uvicorn.workers.UvicornWorker main:app --bind 0.0.0.0:8000"
+    env: docker
+    dockerContext: .
+    dockerfilePath: backend/Dockerfile
     plan: free
     region: ohio
     envVars:
