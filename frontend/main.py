@@ -178,6 +178,8 @@ if workspace == "DATA INGESTION":
                             res = requests.post(f"{BACKEND_URL}/ingest/pdf", files=files)
                             if res.status_code == 200: 
                                 st.success("SUCCESS: INDEX COMPLETE")
+                            elif res.status_code in [502, 504]:
+                                st.error(f"ENGINE ERROR: {res.status_code} - Backend Timeout or Gateway Error. Please check if the Render service is active and environment variables are set.")
                             else:
                                 st.error(f"ENGINE ERROR: {res.status_code} - {res.text}")
                         except Exception as e: 

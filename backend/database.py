@@ -10,6 +10,8 @@ def get_engine():
     global _engine
     if _engine is None:
         DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@db:5432/polymind")
+        if DATABASE_URL.startswith("postgres://"):
+            DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
         _engine = create_engine(DATABASE_URL)
     return _engine
 

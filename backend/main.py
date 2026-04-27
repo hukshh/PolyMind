@@ -48,16 +48,66 @@ class URLIngest(BaseModel):
 class QueryRequest(BaseModel):
     query: str
 
+@app.get("/debug-status")
+async def debug_status(db: Session = Depends(get_db)):
+    status = {
+        "database": "FAILED",
+        "pinecone_api": "MISSING",
+        "pinecone_index": "MISSING",
+        "pinecone_connection": "FAILED",
+        "environment": {
+            "PINECONE_INDEX_NAME": os.getenv("PINECONE_INDEX_NAME"),
+            "HAS_GROQ_KEY": bool(os.getenv("GROQ_API_KEY")),
+            "HAS_PINECONE_KEY": bool(os.getenv("PINECONE_API_KEY"))
+        }
+    }
+    
+    # Check DB
+    try:
+        db.execute("SELECT 1")
+        status["database"] = "LIVE"
+    except Exception as e:
+        status["database"] = f"FAILED: {str(e)}"
+        
+    # Check Pinecone
+    api_key = os.getenv("PINECONE_API_KEY")
+    index_name = os.getenv("PINECONE_INDEX_NAME")
+    if api_key:
+        status["pinecone_api"] = "PROVIDED"
+        try:
+            from pinecone import Pinecone
+            pc = Pinecone(api_key=api_key)
+            if index_name:
+                status["pinecone_index"] = index_name
+                idx = pc.Index(index_name)
+                stats = idx.describe_index_stats()
+                status["pinecone_connection"] = "LIVE"
+                status["pinecone_stats"] = stats
+        except Exception as e:
+            status["pinecone_connection"] = f"FAILED: {str(e)}"
+            
+    return status
+
 @app.post("/ingest/pdf")
 async def ingest_pdf(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    temp_file = None
     try:
-        temp_path = f"temp_{file.filename}"
-        with open(temp_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+        # Use a more robust temp file handling
+        import tempfile
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+            shutil.copyfileobj(file.file, tmp)
+            temp_path = tmp.name
         
+        print(f"DEBUG: Processing PDF {file.filename} from {temp_path}")
         current_rag = get_rag()
+        
+        if not os.getenv("PINECONE_API_KEY") or not os.getenv("PINECONE_INDEX_NAME"):
+            raise ValueError("Missing Pinecone environment variables (API Key or Index Name)")
+
         current_rag.ingest_pdf(temp_path)
-        os.remove(temp_path)
+        
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
 
         # Save to DB
         doc = Document(name=file.filename, source_type="pdf")
@@ -66,7 +116,10 @@ async def ingest_pdf(file: UploadFile = File(...), db: Session = Depends(get_db)
 
         return {"status": "success", "message": f"Ingested {file.filename}"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"CRITICAL ERROR during PDF ingestion: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Engine Error: {str(e)}")
 
 @app.post("/ingest/url")
 async def ingest_url(data: URLIngest, db: Session = Depends(get_db)):
