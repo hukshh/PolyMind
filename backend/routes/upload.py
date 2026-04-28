@@ -1,5 +1,5 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from services.pdf_service import pdf_service
+from ..services.pdf_service import pdf_service
 
 router = APIRouter()
 

@@ -1,8 +1,8 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routes import upload, chat
-from utils.config import settings
+from .routes import upload, chat
+from .utils.config import settings
 
 app = FastAPI(title=settings.APP_NAME)
 

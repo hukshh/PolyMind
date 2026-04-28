@@ -1,5 +1,5 @@
 from fastapi import UploadFile
-from utils.file_handler import save_upload_file
+from ..utils.file_handler import save_upload_file
 
 class PDFService:
     @staticmethod
