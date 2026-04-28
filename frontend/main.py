@@ -147,7 +147,7 @@ with st.sidebar:
     st.markdown("<div style='padding: 1rem 0;'><h2 style='color: white; font-weight: 700; letter-spacing: 1px;'>POLYMIND</h2><p style='color: #4F46E5; font-size: 0.7rem; font-weight: 600; letter-spacing: 1.5px;'>NEURAL COMMAND</p></div>", unsafe_allow_html=True)
     st.write("")
     workspace = st.radio("WORKSPACES", 
-        ["DATA INGESTION", "AGENT SYNTHESIS", "SYSTEM METRICS"],
+        ["DATA INGESTION", "QUERY INTERFACE", "SYSTEM METRICS"],
         label_visibility="collapsed")
     st.write("---")
     st.markdown("<p style='color: #475569; font-size: 0.6rem;'>ENCRYPTED TUNNEL: v1.9.4</p>", unsafe_allow_html=True)
@@ -155,11 +155,11 @@ with st.sidebar:
 # --- MODULE: SOURCE INGESTION (REFINED) ---
 if workspace == "DATA INGESTION":
     st.markdown("<h1 style='color: white; font-size: 2.2rem; font-weight: 700; margin-bottom: 0.5rem;'>Source Ingestion</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='color: #3B82F6; font-weight: 500; margin-bottom: 0.2rem;'>Turn raw documents and URLs into structured intelligence your AI agents can understand.</p>", unsafe_allow_html=True)
-    st.markdown("<p style='color: #64748B; font-size: 0.9rem; margin-bottom: 2rem;'>Upload PDFs or connect web sources to build a searchable knowledge base for multi-agent analysis.</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #3B82F6; font-weight: 500; margin-bottom: 0.2rem;'>Turn raw documents and URLs into structured intelligence.</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color: #64748B; font-size: 0.9rem; margin-bottom: 2rem;'>Upload PDFs or connect web sources to build a searchable knowledge base.</p>", unsafe_allow_html=True)
     
     # Helper Strip
-    st.markdown("<div style='background: #0F172A; border: 1px solid rgba(255,255,255,0.05); padding: 1rem; border-radius: 10px; margin-bottom: 2rem; color: #F8FAFC; font-size: 0.9rem;'>INFO: This is the first step — everything you add here becomes the foundation for AI synthesis.</div>", unsafe_allow_html=True)
+    st.markdown("<div style='background: #0F172A; border: 1px solid rgba(255,255,255,0.05); padding: 1rem; border-radius: 10px; margin-bottom: 2rem; color: #F8FAFC; font-size: 0.9rem;'>INFO: This is the first step — everything you add here becomes the foundation for analysis.</div>", unsafe_allow_html=True)
     
     col1, col2 = st.columns(2, gap="large")
     
@@ -260,9 +260,9 @@ if workspace == "DATA INGESTION":
         </div>
     """, unsafe_allow_html=True)
 
-# --- MODULE: AGENT SYNTHESIS ---
-elif workspace == "AGENT SYNTHESIS":
-    st.markdown("<h1 style='color: white; font-size: 2.2rem; font-weight: 700; margin-bottom: 2rem;'>Agent Synthesis</h1>", unsafe_allow_html=True)
+# --- MODULE: QUERY INTERFACE ---
+elif workspace == "QUERY INTERFACE":
+    st.markdown("<h1 style='color: white; font-size: 2.2rem; font-weight: 700; margin-bottom: 2rem;'>Query Interface</h1>", unsafe_allow_html=True)
     
     if "messages" not in st.session_state:
         st.session_state.messages = []
@@ -278,10 +278,10 @@ elif workspace == "AGENT SYNTHESIS":
             st.markdown(query)
 
         with st.chat_message("assistant"):
-            with st.status("🧠 Synthesizing report...", expanded=True) as status:
-                st.write("Retrieving semantic fragments...")
+            with st.status("🧠 Processing query...", expanded=True) as status:
+                st.write("Retrieving information...")
                 time.sleep(1)
-                st.write("Collaborating with Senior Analyst...")
+                st.write("Generating response...")
                 
                 try:
                     response = requests.post(f"{BACKEND_URL}/query", json={"query": query})

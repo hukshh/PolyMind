@@ -1,23 +1,16 @@
-# 🧠 PolyMind: Multi-Agent Research Assistant
+# 🧠 PolyMind: Simplified Research Assistant
 
-PolyMind is a state-of-the-art Research Assistant that leverages a **Multi-Agent Crew** to scan documents, synthesize answers, fact-check claims, and recommend further exploration. 
+PolyMind is a lightweight Research Assistant that allows you to upload documents and URLs to build a personal knowledge base.
 
-Built with **CrewAI**, **LangChain**, **FastAPI**, and **Streamlit**.
+Built with **FastAPI** and **Streamlit**.
 
 ## 🚀 Features
-- **PDF & URL Ingestion**: Seamlessly upload documents or scrape web content.
-- **RAG Pipeline**: High-speed retrieval using **Pinecone** and Cloud Embeddings.
-- **Multi-Agent Collaboration**:
-    - 🔍 **Researcher**: Extracts precise data from retrieved document chunks.
-    - ✍️ **Summarizer**: Synthesizes notes into a polished, cited response.
-    - ⚖️ **Critic**: Fact-checks the output to prevent hallucinations.
-    - 💡 **Recommender**: Suggests related topics for deeper exploration.
-- **Internal Knowledge Graph**: Stores query history and metrics in **PostgreSQL**.
-- **Lite & Fast**: Optimized for **Render Free** and **Streamlit Cloud**.
+- **PDF & URL Ingestion**: Upload documents or scrape web content.
+- **Knowledge Base**: Track uploaded documents in a **PostgreSQL** database.
+- **Query Interface**: Query your stored knowledge.
+- **Internal History**: Stores query history and metrics.
 
 ## 🛠️ Tech Stack
-- **AI Core**: CrewAI + LangChain + Groq (Llama 3)
-- **Vector DB**: Pinecone
 - **Backend**: FastAPI
 - **Frontend**: Streamlit
 - **Database**: PostgreSQL
@@ -26,12 +19,7 @@ Built with **CrewAI**, **LangChain**, **FastAPI**, and **Streamlit**.
 ## 🏁 Quick Start
 
 ### 1. Setup Environment
-Rename `.env.example` to `.env` and fill in your keys:
-```bash
-GROQ_API_KEY=gsk_...
-PINECONE_API_KEY=pcsk_...
-PINECONE_INDEX_NAME=polymind
-```
+Rename `.env.example` to `.env`.
 
 ### 2. Run with Docker
 ```bash
@@ -53,7 +41,6 @@ This project uses a `render.yaml` Blueprint to set up the API and Database.
 1. Push to GitHub.
 2. Go to [Render Blueprints](https://dashboard.render.com/blueprints).
 3. Connect your repo and deploy.
-4. Set `GROQ_API_KEY`, `PINECONE_API_KEY`, and `PINECONE_INDEX_NAME` in the **polymind-backend** environment settings.
 
 ### 2. Frontend (Streamlit Cloud)
 1. Go to [Streamlit Cloud](https://share.streamlit.io/).
@@ -65,4 +52,4 @@ This project uses a `render.yaml` Blueprint to set up the API and Database.
    ```
 
 ---
-Created with ❤️ by PolyMind Crew.
+Created with ❤️ by PolyMind.
