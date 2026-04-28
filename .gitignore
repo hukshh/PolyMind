@@ -2,18 +2,18 @@
 __pycache__/
 *.py[cod]
 *$py.class
-.venv
+.venv/
 venv/
-ENV/
-env/
 .env
 
-# Docker/System
+# Data & Indices
+data/uploads/
+data/faiss_index/
+backend/data/uploads/
+backend/data/faiss_index/
+
+# Other
+node_modules/
 .DS_Store
 *.log
-temp_*
-postgres_data/
-
-# Secrets
-.env
 .secrets

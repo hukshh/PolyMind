@@ -1,6 +1,6 @@
-# AI Research Assistant (RAG-Ready Backend)
+# AI Research Assistant (FastAPI + RAG-Ready)
 
-A clean, modular FastAPI backend designed for an AI-powered research assistant.
+A clean, modular FastAPI backend for an AI-powered research assistant.
 
 ## 🚀 Features
 - **PDF Upload API**: Accept and store documents securely.
@@ -13,6 +13,16 @@ A clean, modular FastAPI backend designed for an AI-powered research assistant.
 - **Streamlit**: Frontend interface (upcoming).
 - **Groq**: High-speed LLM inference (upcoming).
 - **FAISS**: Vector database for document retrieval (upcoming).
+
+## 📁 Project Structure
+```text
+backend/
+├── routes/    (API endpoints)
+├── services/  (Business logic)
+├── utils/     (Helper functions & Config)
+├── models/    (Request/Response schemas)
+└── data/      (Local uploads & Indices)
+```
 
 ## 🏁 Run Locally
 
@@ -28,7 +38,7 @@ Once the server is running, you can access the interactive Swagger documentation
 ---
 
 ## ❌ Legacy Code
-The previous PolyMind system, including legacy configurations and Docker setups, has been moved to [/legacy-polymind](./legacy-polymind) for reference.
+The previous PolyMind system is preserved inside [/legacy-polymind](./legacy-polymind) for reference.
 
 ---
 Created with ❤️ by the AI Research Assistant Team.
