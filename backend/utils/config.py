@@ -3,7 +3,8 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     APP_NAME: str = "PolyMind API"
-    UPLOAD_DIR: str = "data/uploads"
+    BASE_DIR: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    UPLOAD_DIR: str = os.path.join(BASE_DIR, "data", "uploads")
     ALLOWED_ORIGINS: list = ["*"]
 
     class Config:
